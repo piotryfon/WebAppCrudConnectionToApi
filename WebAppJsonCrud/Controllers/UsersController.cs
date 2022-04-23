@@ -69,7 +69,10 @@ namespace WebAppJsonCrud.Controllers
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.DeleteAsync(
                 $"http://localhost:5000/api/users/{id}");
-            var resp = response.StatusCode;
+         
+            var statusCode = response.StatusCode;
+            if (statusCode == HttpStatusCode.OK)
+                TempData["Success"] = $"Success, you have successfully deleted User (Id: {id})";
             return RedirectToAction("GetAll");
         }
 
@@ -102,10 +105,13 @@ namespace WebAppJsonCrud.Controllers
             {
                 HttpResponseMessage result = await client.PutAsync("http://localhost:5000/api/users/"+id,
                      new StringContent(objJson, Encoding.UTF8, "application/json"));
-
+                var statusCode = result.StatusCode;
+                if (statusCode == HttpStatusCode.OK)
+                    TempData["Success"] = $"Success, you have successfully changed User (Id: {id})";
+                
             }
-
-            return RedirectToAction("GetAll");
+           
+            return RedirectToAction("Edit");
         }
 
     }

@@ -5,7 +5,16 @@
 }
 
 <h1>Edit User</h1>
-
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>@TempData["Success"].ToString()</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+ 
 <hr />
 <div class="row">
     <div class="col-md-4">
