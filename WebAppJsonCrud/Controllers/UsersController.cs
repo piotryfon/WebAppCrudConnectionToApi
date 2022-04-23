@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -13,6 +11,7 @@ namespace WebAppJsonCrud.Controllers
 {
     public class UsersController : Controller
     {
+        [HttpGet]
         public ActionResult GetAll()
         {
             var webClient = new WebClient();
@@ -51,19 +50,18 @@ namespace WebAppJsonCrud.Controllers
 
 
         [HttpGet("{id}")]
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
             var webClient = new WebClient();
-            var json = webClient.DownloadString(@"http://localhost:5000/api/users/"+id);
+            var json = webClient.DownloadString(@"http://localhost:5000/api/users/" + id);
             var user = JsonConvert.DeserializeObject<User>(json);
             return View(user);
         }
 
-    
 
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -72,6 +70,41 @@ namespace WebAppJsonCrud.Controllers
             HttpResponseMessage response = await client.DeleteAsync(
                 $"http://localhost:5000/api/users/{id}");
             var resp = response.StatusCode;
+            return RedirectToAction("GetAll");
+        }
+
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            if (id == 0)
+            {
+                return NotFound();
+            }
+            var webClient = new WebClient();
+            var json = webClient.DownloadString(@"http://localhost:5000/api/users/" + id);
+            var user = JsonConvert.DeserializeObject<User>(json);
+            return View(user);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, string name, string emailAddress)
+        {
+            var user = new User
+            {
+                Name = name,
+                EmailAddress = emailAddress ?? "test@test.pl"
+            };
+            var objJson = JsonConvert.SerializeObject(user);
+
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage result = await client.PutAsync("http://localhost:5000/api/users/"+id,
+                     new StringContent(objJson, Encoding.UTF8, "application/json"));
+
+            }
+
             return RedirectToAction("GetAll");
         }
 
