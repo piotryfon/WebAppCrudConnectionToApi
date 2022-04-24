@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -114,5 +115,30 @@ namespace WebAppJsonCrud.Controllers
             return RedirectToAction("Edit");
         }
 
+
+        public ActionResult SearchForm()
+        {
+            return View();
+        }
+
+   
+        public async Task<IActionResult> Search(string searchPhrase)
+        {
+           
+            var webClient = new WebClient();
+            var json = webClient.DownloadString(@"http://localhost:5000/api/users/");
+      
+            List<User>usersList = JsonConvert.DeserializeObject<List<User>>(json);
+
+            var newList = usersList.Where(u => u.Name.ToLower().Contains(searchPhrase.Trim().ToLower()));
+            
+            if(newList.Count() != 0)
+            {
+                return View("GetAll", newList);
+            }
+
+            TempData["Warning"] = "User not found";
+            return View("SearchForm");
+        }
     }
 }
