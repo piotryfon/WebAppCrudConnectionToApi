@@ -5,19 +5,32 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Get All</h1>
-@if (TempData["Success"] != null)
+<h1>Get all Users</h1>
+
+@if (TempData["SuccessDeleted"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>@TempData["Success"].ToString()</strong>
+        <strong>@TempData["SuccessDeleted"].ToString()</strong>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
 }
+
 <p>
-    <a asp-action="Create">Create New</a> | <a asp-action="SearchForm">Search</a>
+    <button class="btn btn-success" id="create-user-button">Create user</button>
+    <button class="btn btn-primary" id="search-user-button">Search user</button>
 </p>
+
+<!--Modal Create-->
+<div id="modal-create" class="modal fade" data-url="@Url.Action("Create")">
+    <div id="create-user-form"></div>
+</div>
+<!--Modal Search-->
+<div id="modal-search" class="modal fade" data-url="@Url.Action("SearchForm")">
+    <div id="search-user-form"></div>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -54,3 +67,40 @@
         }
     </tbody>
 </table>
+
+@if (TempData["NotFound"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>@TempData["NotFound"].ToString()</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $("#create-user-button").click(function () {
+            let url = $("#modal-create").data("url");
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (res) {
+                    $("#create-user-form").html(res);
+                    $("#modal-create").modal("show");
+                }
+            })
+        })
+           $("#search-user-button").click(function () {
+            let url = $("#modal-search").data("url");
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (res) {
+                    $("#search-user-form").html(res);
+                    $("#modal-search").modal("show");
+                }
+            })
+        })
+    </script>
+}
