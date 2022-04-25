@@ -60,7 +60,7 @@ namespace WebAppJsonCrud.Controllers
             var webClient = new WebClient();
             var json = webClient.DownloadString(@"http://localhost:5000/api/users/" + id);
             var user = JsonConvert.DeserializeObject<User>(json);
-            return View(user);
+            return View();
         }
 
 
@@ -73,7 +73,7 @@ namespace WebAppJsonCrud.Controllers
          
             var statusCode = response.StatusCode;
             if (statusCode == HttpStatusCode.OK)
-                TempData["Success"] = $"Success, you have successfully deleted User (Id: {id})";
+                TempData["SuccessDeleted"] = "Success, you have successfully deleted User";
             return RedirectToAction("GetAll");
         }
 
