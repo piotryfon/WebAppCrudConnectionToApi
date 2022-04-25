@@ -43,10 +43,8 @@ namespace WebAppJsonCrud.Controllers
             {
                 HttpResponseMessage result = await client.PostAsync("http://localhost:5000/api/users",
                      new StringContent(objJson, Encoding.UTF8, "application/json"));
-
+                return RedirectToAction("GetAll");
             }
-
-            return RedirectToAction("GetAll");
         }
 
 
@@ -85,10 +83,12 @@ namespace WebAppJsonCrud.Controllers
             {
                 return NotFound();
             }
-            var webClient = new WebClient();
-            var json = webClient.DownloadString(@"http://localhost:5000/api/users/" + id);
-            var user = JsonConvert.DeserializeObject<User>(json);
-            return View(user);
+            using (var webClient = new WebClient())
+            {
+                var json = webClient.DownloadString(@"http://localhost:5000/api/users/" + id);
+                var user = JsonConvert.DeserializeObject<User>(json);
+                return View(user);
+            }
         }
 
 
@@ -137,8 +137,8 @@ namespace WebAppJsonCrud.Controllers
                 return View("GetAll", newList);
             }
 
-            TempData["Warning"] = "User not found";
-            return View("SearchForm");
+            TempData["NotFound"] = "User not found";
+            return View("GetAll", newList);
         }
     }
 }
