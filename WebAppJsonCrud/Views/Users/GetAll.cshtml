@@ -35,10 +35,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
+                @Html.ActionLink("ID", "GetAll", new { sortOrder = ViewBag.IDSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.ActionLink("Name", "GetAll", new { sortOrder = ViewBag.NameSortParm })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.EmailAddress)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -12,14 +13,34 @@ namespace WebAppJsonCrud.Controllers
 {
     public class UsersController : Controller
     {
-        [HttpGet]
-        public ActionResult GetAll()
+        public async Task<ActionResult> GetAllAsync(string sortOrder)
         {
-            var webClient = new WebClient();
-            var json = webClient.DownloadString(@"http://localhost:5000/api/users");
-            var objJson = JsonConvert.DeserializeObject<List<User>>(json);
+            using (var client = new HttpClient())
+            {
+                var json = await client.GetStringAsync(@"http://localhost:5000/api/users");
+                var usersList = JsonConvert.DeserializeObject<List<User>>(json);
+                var users = from u in usersList select u;
+                ViewBag.IDSortParm = String.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
+                ViewBag.NameSortParm = sortOrder == "Name" ? "name_desc" : "Name";
 
-            return View("GetAll", objJson);
+                switch (sortOrder)
+                {
+                    case "id_desc":
+                        users = users.OrderByDescending(u => u.Id);
+                        break;
+
+                    case "Name":
+                        users = users.OrderBy(u => u.Name);
+                        break;
+                    case "name_desc":
+                        users = users.OrderByDescending(u => u.Name);
+                        break;
+                    default:
+                        users = users.OrderBy(u => u.Id);
+                        break;
+                }
+                return View("GetAll", users.ToList());
+            }
         }
 
 
@@ -58,7 +79,7 @@ namespace WebAppJsonCrud.Controllers
             var webClient = new WebClient();
             var json = webClient.DownloadString(@"http://localhost:5000/api/users/" + id);
             var user = JsonConvert.DeserializeObject<User>(json);
-            return View();
+            return View(user);
         }
 
 
